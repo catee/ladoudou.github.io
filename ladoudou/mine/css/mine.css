@@ -1,0 +1,7 @@
+body{
+    background: url(../../../img/bg.jpg) top center no-repeat;
+}
+header{
+    height: 3px; width: 100%;
+    background-color: hotpink;
+}
