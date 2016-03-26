@@ -8,6 +8,7 @@
   },
   "description": "LALALA",
   "devDependencies": {
-    // "mime": "~1.2.7"
+    "gulp": "^3.9.1",
+    "gulp-livereload": "^3.8.1"
   }
 }

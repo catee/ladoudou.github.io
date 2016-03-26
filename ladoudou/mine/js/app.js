@@ -3,6 +3,9 @@ requirejs.config({
 });
 
 // Start the main app logic.
-requirejs(['test'], function (a) {
+requirejs(['test', 'render/render'], function (a, Render) {
     console.log(a);
+    window.R = new Render({
+        canvas: document.querySelector('#canvas')
+    });
 });
