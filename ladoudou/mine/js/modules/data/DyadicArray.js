@@ -53,7 +53,7 @@ define(['utils/typeChecker'], function (typeChecker) {
                 throw Error('卷积核必须是 DyadicArray 类型');
             }
 
-            if (! /^float32array$/i.test(getType(core.source))) {
+            if (getType(core.source) !== 'float32array') {
                 throw Error('卷积核必须是类型化数组 Float32Array');
             }
 
@@ -71,7 +71,7 @@ define(['utils/typeChecker'], function (typeChecker) {
                 var value = s_item;
                 paths.forEach(function (p_item) {
                     if (! p_item in value) {
-                        throw Error('属性名称不匹配');
+                        throw Error('找不到属性' + p_item);
                     }
                     value = value[s_item];
                 })
@@ -86,9 +86,7 @@ define(['utils/typeChecker'], function (typeChecker) {
             var halfCoreSize = (coreSize - 1) / 2;
             var rowZeroed = row + coreSize - 1;
             var columZeroed = colum + coreSize - 1;
-            var lengthZeroed = rowZeroed * columZeroed;
-            var sourceZeroed = new Float32Array(lengthZeroed);
-            var thisZeroed = new DyadicArray(sourceZeroed, rowZeroed, columZeroed);
+            var thisZeroed = new DyadicArray(new Float32Array(rowZeroed * columZeroed), rowZeroed, columZeroed);
             var result = new DyadicArray(new Float32Array(row * colum), row, colum);
 
             for (var i = 0; i < rowZeroed; i ++) {
@@ -102,23 +100,19 @@ define(['utils/typeChecker'], function (typeChecker) {
                 }
             }
 
-            console.log(thisZeroed);
-
             for (var i = halfCoreSize; i < row + halfCoreSize; i ++) {
                 for (var j = halfCoreSize; j < colum + halfCoreSize; j ++) {
                     var _result = 0;
                     for (var m = 0; m < coreSize; m ++) {
                         for (var n = 0; n < coreSize; n ++) {
-                            _result += core.getValue(m, n) * thisZeroed.getValue(i - halfCoreSize, j - halfCoreSize);
+                            _result += core.getValue(m, n) * thisZeroed.getValue(i + m - halfCoreSize, j + n - halfCoreSize);
                         }
                     }
                     result.setValue(i - halfCoreSize, j - halfCoreSize, _result);
                 }
             }
 
-            console.log(result);
-
-
+            return result;
 
         }
 
