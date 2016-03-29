@@ -3,12 +3,12 @@ requirejs.config({
 });
 
 // Start the main app logic.
-requirejs(['test', 'render/render', 'data/DyadicArray'], function (a, Render, DyadicArray) {
+requirejs(['test', 'render/render', 'data/DyadicArray', 'data/Data'], function (a, Render, DyadicArray, Data) {
     console.log(a);
     window.R = new Render({
         canvas: document.querySelector('#canvas')
     });
-    window.D = new DyadicArray([1,0,0,1,1,1,0,0,1,0,0,1], 3, 4);
+    // window.D = new DyadicArray([1,0,0,1,1,1,0,0,1,0,0,1], 3, 4);
     window.C = new DyadicArray(new Float32Array([1, 1, 1, 1, 0, 1, 1, 1, 1]), 3, 3);
 
     var a = new Array();
@@ -20,4 +20,9 @@ requirejs(['test', 'render/render', 'data/DyadicArray'], function (a, Render, Dy
     var result = a_d.convolution(C);
     console.log(+ new Date() - s);
     console.log(result);
+
+    var s = + new Date();
+    window.D = new Data();
+    console.log(+ new Date() - s);
+
 });

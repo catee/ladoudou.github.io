@@ -39,7 +39,7 @@ define(['utils/typeChecker'], function (typeChecker) {
             }
 
             var index = y + x * this.colum;
-            if (getType(this.source[index]) !== getType(newValue)) {
+            if (getType(this.source[index]) !== 'undefined' && getType(this.source[index]) !== getType(newValue)) {
                 throw Error('新值与原值类型不统一');
             }
 

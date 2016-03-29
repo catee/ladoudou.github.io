@@ -61,7 +61,7 @@ define(function () {
         },
 
         m2c: function (x, y) {
-            return this.d2c((this.mapAreaWidth / 2 - x + 1)* this.unitSize * (-1), (this.mapAreaHeight / 2 - y + 1) * this.unitSize);
+            return this.d2c((this.mapAreaWidth / 2 - y + 1)* this.unitSize * (-1), (this.mapAreaHeight / 2 - x + 1) * this.unitSize);
         },
 
         setMapArea: function (cx, cy) {

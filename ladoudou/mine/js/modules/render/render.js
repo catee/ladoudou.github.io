@@ -33,7 +33,7 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
         init: function () {
             var self = this;
             $.when(this._deferred).done(function () {
-                self.level = 0;
+                self.level = 4;
             });
             this.prepareImages();
         },
@@ -56,11 +56,11 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
                 default:
                     throw Error('级别必须是0-3，或自定义数组');
             }
-            this.mineAreaWidth = arr[0] * this.mineSize;
-            this.mineAreaHeight = arr[1] * this.mineSize;
+            this.mineAreaWidth = arr[1] * this.mineSize;
+            this.mineAreaHeight = arr[0] * this.mineSize;
             this.Mines = arr[2];
             this.clearCanvas();
-            this.coordinateTransition.setMapArea(arr[0], arr[1]);
+            this.coordinateTransition.setMapArea(arr[1], arr[0]);
             this.paintMap();
         },
 
@@ -127,7 +127,7 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
             do {
                 var ox = i % cx + 1;
                 var oy = Math.ceil(i / cx + .1e-7);
-                this.paintUnit(ox, oy, 'map');
+                this.paintUnit(oy, ox, 'map');
             } while (i --)
 
             // var ptrn = ctx.createPattern(map, 'repeat');
@@ -135,18 +135,19 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
             // ctx.fillRect(coo[0], coo[1], width, height);
         },
 
-        paintUnit: function (mx, my, type) {
+        paintUnit: function (m, n, type) {
+            if (m < 1 || n < 1 || m > this.mineAreaHeight / this.mineSize || n > this.mineAreaWidth / this.mineSize) {
+                return;
+            }
             var map = this.images.map,
                 ctx = this.canvasContext,
                 coorTrans = this.coordinateTransition;
             var s = this.mineSize;
             var pos = maps[type];
 
-            var coo = coorTrans.m2c(mx, my);
+            var coo = coorTrans.m2c(m, n);
             ctx.drawImage(map, pos[0], pos[1], pos[2], pos[3], coo[0], coo[1], s, s);
         },
-
-
 
 
 
