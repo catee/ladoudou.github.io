@@ -4,6 +4,7 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
     var unitSize = conf.unitSize;
     var sourceImage = conf.sourceImage;
     var maps = conf.maps;
+    var getType = typeChecker.getType;
 
     var requestAnimationFrame = window.requestAnimationFrame;
     var cancelAnimationFrame = window.cancelAnimationFrame;
@@ -13,12 +14,12 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
         this.canvasContext = canvas.getContext('2d');
         var width = this.canvasWidth = canvas.width;
         var height = this.canvasHeight = canvas.height;
-        this.coordinateTransition = new Coor(width, height, unitSize);
+        this.coordinateTransition = new Coor(width, height, unitSize, width / canvas.clientWidth);
         this.images = {};
         this.mineAreaWidth = 0;
         this.mineAreaHeight = 0;
         this.Mines = 0;
-        this.mineSize = 20; 
+        this.mineSize = unitSize; 
         this.init();
     };
 
@@ -33,14 +34,14 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
         init: function () {
             var self = this;
             $.when(this._deferred).done(function () {
-                self.level = 4;
+                self.level = 0;
             });
             this.prepareImages();
         },
 
         set level (newValue) {
             var arr;
-            switch (typeChecker.getType(newValue)) {
+            switch (getType(newValue)) {
                 case 'number':
                     if (newValue < 0) {
                         arr = level[0]
@@ -136,6 +137,11 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
         },
 
         paintUnit: function (m, n, type) {
+            if (getType(m) === 'array') {
+                type = n;
+                n = m[1];
+                m = m[0];
+            }
             if (m < 1 || n < 1 || m > this.mineAreaHeight / this.mineSize || n > this.mineAreaWidth / this.mineSize) {
                 return;
             }
@@ -147,6 +153,28 @@ define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animati
 
             var coo = coorTrans.m2c(m, n);
             ctx.drawImage(map, pos[0], pos[1], pos[2], pos[3], coo[0], coo[1], s, s);
+        },
+
+        paint: function (array) {
+            array.forEach(function (obj) {
+                if (obj.flag) {
+                    this.paintUnit(obj.m + 1, obj.n + 1, 'flag');
+                } else {
+                    if (obj.open) {
+                        if (obj.mine) {
+                            this.paintUnit(obj.m + 1, obj.n + 1, 'mineBoom');
+                        } else {
+                            this.paintUnit(obj.m + 1, obj.n + 1, 'num' + obj.num);
+                        }
+                    } else {
+                        if (obj.mine) {
+                            this.paintUnit(obj.m + 1, obj.n + 1, 'mine');
+                        } else {
+                            this.paintUnit(obj.m + 1, obj.n + 1, 'map');
+                        }
+                    }
+                }
+            }, this);
         },
 
 

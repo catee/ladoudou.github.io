@@ -22,23 +22,23 @@ define(['utils/typeChecker'], function (typeChecker) {
 
         constructor: DyadicArray,
 
-        getValue: function (x, y) {
+        getValue: function (m, n) {
 
-            if (x < 0 || x > (this.row - 1) || y < 0 || y > (this.colum - 1)) {
+            if (m < 0 || m > (this.row - 1) || n < 0 || n > (this.colum - 1)) {
                 throw Error('坐标超出矩阵边界');
             }
 
-            return this.source[y + x * this.colum];
+            return this.source[n + m * this.colum];
 
         },
 
-        setValue: function (x, y, newValue) {
+        setValue: function (m, n, newValue) {
 
-            if (x < 0 || x > (this.row - 1) || y < 0 || y > (this.colum - 1)) {
+            if (m < 0 || m > (this.row - 1) || n < 0 || n > (this.colum - 1)) {
                 throw Error('坐标超出矩阵边界');
             }
 
-            var index = y + x * this.colum;
+            var index = n + m * this.colum;
             if (getType(this.source[index]) !== 'undefined' && getType(this.source[index]) !== getType(newValue)) {
                 throw Error('新值与原值类型不统一');
             }

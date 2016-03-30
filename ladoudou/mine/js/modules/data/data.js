@@ -4,7 +4,7 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
     var getType = typeChecker.getType;
     var defineProperties = Object.defineProperties;
 
-    function createUnit (x, y, mine, num) {
+    function createUnit (m, n, mine, num) {
 
         var unit = {
             flag: 0,
@@ -12,12 +12,12 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
         }
 
         defineProperties(unit, {
-            x: {
-                value: x,
+            m: {
+                value: m,
                 writable: false
             },
-            y: {
-                value: y,
+            n: {
+                value: n,
                 writable: false
             },
             mine: {
@@ -50,7 +50,7 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
         constructor: MineData,
 
         init: function () {
-            this.level = 4;
+            this.level = 0;
         },
 
         set level (newValue) {
@@ -119,26 +119,26 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
             this.data = data;
         },
 
-        getAroundMines: function (x, y) {
-            if (getType(x) === 'array') {
-                y = x[1];
-                x = x[0];
+        getAroundMines: function (m, n) {
+            if (getType(m) === 'array') {
+                n = m[1];
+                m = m[0];
             }
             var mineMap = this.mineMap;
             var data = this.data;
             var mines = [];
-            var minesNum = this.countMap.getValue(x, y);
+            var minesNum = this.countMap.getValue(m, n);
 
             if (minesNum > 0) {
-                try { mineMap.getValue(x - 1, y - 1) && mines.push(data.getValue(x - 1, y - 1)); } catch (e) {};
-                try { mineMap.getValue(x - 1, y) && mines.push(data.getValue(x - 1, y)); } catch (e) {};
-                try { mineMap.getValue(x - 1, y + 1) && mines.push(data.getValue(x - 1, y + 1)); } catch (e) {};
-                try { mineMap.getValue(x, y - 1) && mines.push(data.getValue(x, y - 1)); } catch (e) {};
-                // mineMap.getValue(x, y) && mines.push(data.getValue(x, y));
-                try { mineMap.getValue(x, y + 1) && mines.push(data.getValue(x, y + 1)); } catch (e) {};
-                try { mineMap.getValue(x + 1, y - 1) && mines.push(data.getValue(x + 1, y - 1)); } catch (e) {};
-                try { mineMap.getValue(x + 1, y) && mines.push(data.getValue(x + 1, y)); } catch (e) {};
-                try { mineMap.getValue(x + 1, y + 1) && mines.push(data.getValue(x + 1, y + 1)); } catch (e) {};
+                try { mineMap.getValue(m - 1, n - 1) && mines.push(data.getValue(m - 1, n - 1)); } catch (e) {};
+                try { mineMap.getValue(m - 1, n) && mines.push(data.getValue(m - 1, n)); } catch (e) {};
+                try { mineMap.getValue(m - 1, n + 1) && mines.push(data.getValue(m - 1, n + 1)); } catch (e) {};
+                try { mineMap.getValue(m, n - 1) && mines.push(data.getValue(m, n - 1)); } catch (e) {};
+                // mineMap.getValue(m, n) && mines.push(data.getValue(m, n));
+                try { mineMap.getValue(m, n + 1) && mines.push(data.getValue(m, n + 1)); } catch (e) {};
+                try { mineMap.getValue(m + 1, n - 1) && mines.push(data.getValue(m + 1, n - 1)); } catch (e) {};
+                try { mineMap.getValue(m + 1, n) && mines.push(data.getValue(m + 1, n)); } catch (e) {};
+                try { mineMap.getValue(m + 1, n + 1) && mines.push(data.getValue(m + 1, n + 1)); } catch (e) {};
             }
 
             return {
@@ -147,26 +147,26 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
             }
         },
 
-        setOpen: function (x, y, status) {
-            if (getType(x) === 'array') {
-                status = y;
-                y = x[1];
-                x = x[0];
+        setOpen: function (m, n, status) {
+            if (getType(m) === 'array') {
+                status = n;
+                n = m[1];
+                m = m[0];
             }
             status = getType(status) === 'undefined' ? 1 : + !! status;
             // console.log(status);
-            this.data.getValue(x, y).open = status;
+            this.data.getValue(m, n).open = status;
         },
 
-        setFlag: function (x, y, status) {
-            if (getType(x) === 'array') {
-                status = y;
-                y = x[1];
-                x = x[0];
+        setFlag: function (m, n, status) {
+            if (getType(m) === 'array') {
+                status = n;
+                n = m[1];
+                m = m[0];
             }
             status = getType(status) === 'undefined' ? 1 : + !! status;
             // console.log(status);
-            this.data.getValue(x, y).flag = status;
+            this.data.getValue(m, n).flag = status;
         }
 
     }
