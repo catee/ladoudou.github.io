@@ -3,7 +3,7 @@ requirejs.config({
 });
 
 // Start the main app logic.
-requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/control'], function (Render, DyadicArray, Data, Control) {
+requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/Control'], function (Render, DyadicArray, Data, Control) {
     console.log(a);
     window.R = new Render({
         canvas: document.querySelector('#canvas')

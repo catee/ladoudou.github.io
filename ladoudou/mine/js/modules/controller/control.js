@@ -1,4 +1,4 @@
-define(['controller/rules'], function(Rules) {
+define(['controller/Rules'], function(Rules) {
 	var _rules = null;
 
 	var Control = function(data, render) {

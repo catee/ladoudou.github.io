@@ -1,4 +1,4 @@
-define(['utils/typeChecker', 'data/config', 'render/coordinate', 'render/animationFrame'], function (typeChecker, conf, Coor) {
+define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animationFrame'], function (typeChecker, conf, Coor) {
 
     var level = conf.level;
     var unitSize = conf.unitSize;
