@@ -3,7 +3,7 @@ requirejs.config({
 });
 
 // Start the main app logic.
-requirejs(['render/Render', 'data/DyadicArray', 'data/Data'], function (Render, DyadicArray, Data) {
+requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/control'], function (Render, DyadicArray, Data, Control) {
     console.log(a);
     window.R = new Render({
         canvas: document.querySelector('#canvas')
@@ -25,9 +25,11 @@ requirejs(['render/Render', 'data/DyadicArray', 'data/Data'], function (Render, 
     window.D = new Data();
     console.log(+ new Date() - s);
 
-    $('#canvas').on('click', function (e) {
-        R.paintUnit(R.coordinateTransition.c2m(e.offsetX, e.offsetY), 'num0');
-        console.log(R.coordinateTransition.c2m(e.offsetX, e.offsetY));
-    })
+    // $('#canvas').on('click', function (e) {
+    //     R.paintUnit(R.coordinateTransition.c2m(e.offsetX, e.offsetY), 'num0');
+    //     console.log(R.coordinateTransition.c2m(e.offsetX, e.offsetY));
+    // })
+    
+    var control = new Control(window.D, window.R);
 
 });
