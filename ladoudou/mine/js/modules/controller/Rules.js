@@ -3,11 +3,18 @@ define(function() {
 	var Rules = function(data, render) {
 		this.data = data;
 		this.render = render;
+		this.init();
 	};
 
 	Rules.prototype = {
 
 		constructor: Rules,
+
+		init: function(){
+			this.noMineUnits = this.data.data.source.length - this.data.countMines;
+			this.openedUnits = 0;
+			this.mineLeft = this.data.countMines;
+		},
 
 		/**
 		 * 当前格标记为红旗
@@ -15,10 +22,11 @@ define(function() {
 		 */
 		mark: function(offsetX, offsetY) {
 			var unit = this._getUnit(offsetX, offsetY);
-			if (!unit.open) { // 标志或取消红旗
+			if (unit && !unit.open) { // 标志或取消红旗
 				var f = unit.flag ? 0 : 1;
 				this.data.setFlag(unit.m, unit.n, f);
 				this.render.paintUnit(unit.m + 1, unit.n + 1, f ? "flag" : "map");
+				Event.trigger("FLAG", f ? --this.mineLeft : ++this.mineLeft);
 			}
 		},
 
@@ -28,7 +36,7 @@ define(function() {
 		 */
 		open: function(offsetX, offsetY) {
 			var unit = this._getUnit(offsetX, offsetY);
-			this._openUnit(unit);
+			unit && this._openUnit(unit);
 		},
 
 		/**
@@ -37,7 +45,7 @@ define(function() {
 		 */
 		quickOpen: function(offsetX, offsetY) {
 			var unit = this._getUnit(offsetX, offsetY);
-			if (unit.open && unit.num > 0 && !unit.flag && !unit.mine) {
+			if (unit && unit.open && unit.num > 0 && !unit.flag && !unit.mine) {
 				var neighbors = this._getNeighbors(unit);
 				var flags = this._getNeighborsInfo(neighbors, "flag");
 				unit.num === flags && this._openNeighbors(neighbors);
@@ -53,13 +61,16 @@ define(function() {
 				// 渲染结束效果，对render返回所有雷的对象数组
 				var arr_allmines = this._getAllMines();
 				this.render.paint(arr_allmines);
+				Event.trigger("FAILURE");
 			} else if (unit.num === 0) { // 空白，递归打开周围8格
 				this.data.setOpen(unit.m, unit.n);
+				this._isSuccess();
 				this.render.paintUnit(unit.m + 1, unit.n + 1, "num0");
 				var neighbors = this._getNeighbors(unit);
 				this._openNeighbors(neighbors);
 			} else { // 数字，显示
-				this.data.setOpen(unit.m, unit.n);
+				this.data.setOpen(unit.m, unit.n);				
+				this._isSuccess();
 				this.render.paintUnit(unit.m + 1, unit.n + 1, "num" + unit.num);
 			}
 		},
@@ -67,8 +78,11 @@ define(function() {
 		// 获取单元格数据
 		_getUnit: function(offsetX, offsetY) {
 			var coord = this.render.coordinateTransition.c2m(offsetX, offsetY);
-			var unit = this.data.data.getValue(coord[0] - 1, coord[1] - 1);
-			return unit;
+			if (coord[0] > 0) {
+				return this.data.data.getValue(coord[0] - 1, coord[1] - 1);
+			} else {
+				return;
+			}
 		},
 
 		// 统计周围8格某信息总数
@@ -139,6 +153,16 @@ define(function() {
 				unit.mine && mineUnits.push(unit);
 			});
 			return mineUnits;
+		},
+
+		// 游戏胜利：所有非雷格子均已打开
+		_isSuccess: function() {
+			this.openedUnits++; 
+			if (this.openedUnits === this.noMineUnits) {
+				Event.trigger("SUCCESS");
+				return true;
+			}
+			return false;
 		}
 
 	};
