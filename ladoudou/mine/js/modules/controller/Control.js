@@ -1,12 +1,13 @@
 define(['controller/Rules'], function(Rules) {
 	var _rules = null;
 
-	var Control = function(data, render) {
-		_rules = new Rules(data, render);
+	var Control = function(data, render, event) {
+		_rules = new Rules(data, render, event);
+		this.event = event;
 		this.ele = render.canvas;
 		this.timeout_click = null;
-		this.init();
 		this.bind();
+		this.init();
 	};
 
 	Control.prototype = {
@@ -18,16 +19,19 @@ define(['controller/Rules'], function(Rules) {
 			document.oncontextmenu = function(e) {
 				e.preventDefault();
 			};
+			// // 初始化游戏
+			// this.event.trigger("INIT",1);
 		},
 
-		bind: function() {		
-			this.handleEvent = this.bindEvent;	
+		bind: function() {
+			this.handleEvent = this.bindEvent;
 			// 绑定鼠标事件
 			// 设定事件绑定函数中的this为当前对象 handleEvent
 			this.ele.addEventListener("dblclick", this, false);
 			this.ele.addEventListener("mousedown", this, false);
 			// 初始化规则所需数据
 			_rules.init();
+			this.firstClick = true;
 		},
 
 		unbind: function() {
@@ -38,6 +42,8 @@ define(['controller/Rules'], function(Rules) {
 		 * 鼠标双击响应事件
 		 */
 		onDoubleClick: function(e) {
+			this.firstClick && this.event.trigger("START");
+			this.firstClick = false;
 			clearTimeout(this.timeout_click);
 			// console.log("double click.");
 			_rules.quickOpen(e.offsetX, e.offsetY);
@@ -47,6 +53,8 @@ define(['controller/Rules'], function(Rules) {
 		 * 鼠标点击响应事件
 		 */
 		onMouseDown: function(e) {
+			this.firstClick && this.event.trigger("START");
+			this.firstClick = false;
 			if (e.buttons == 1) { // 单击
 				clearTimeout(this.timeout_click);
 				this.timeout_click = setTimeout(function() {

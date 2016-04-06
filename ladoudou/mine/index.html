@@ -13,9 +13,16 @@
     <section class="background"></section>
 
     <section class="menu">
-        <div class="items">难度：</div>
+        <div class="items">难度：
+            <select id="gameLevel">
+                <option value=0 >初级</option>
+                <option value=1 >中级</option>
+                <option value=2 >高级</option>
+                <option value=3 >变态</option>
+            </select>
+        </div>
         <div class="items">雷数：<span id="leftMine"></span></div>
-        <div class="items">时间：</div>
+        <div class="items">时间：<span id="leftTime"></span></div>
         <div class="items">重玩：<button id="restart">restart</button></div>
     </section>
 

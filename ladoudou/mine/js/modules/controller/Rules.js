@@ -1,8 +1,9 @@
 define(function() {
 
-	var Rules = function(data, render) {
+	var Rules = function(data, render, event) {
 		this.data = data;
 		this.render = render;
+		this.event = event;
 		this.init();
 	};
 
@@ -25,8 +26,9 @@ define(function() {
 			if (unit && !unit.open) { // 标志或取消红旗
 				var f = unit.flag ? 0 : 1;
 				this.data.setFlag(unit.m, unit.n, f);
+				// this.render.paint(unit);
 				this.render.paintUnit(unit.m + 1, unit.n + 1, f ? "flag" : "map");
-				Event.trigger("FLAG", f ? --this.mineLeft : ++this.mineLeft);
+				this.event.trigger("FLAG", f ? --this.mineLeft : ++this.mineLeft);
 			}
 		},
 
@@ -61,17 +63,19 @@ define(function() {
 				// 渲染结束效果，对render返回所有雷的对象数组
 				var arr_allmines = this._getAllMines();
 				this.render.paint(arr_allmines);
-				Event.trigger("FAILURE");
+				this.event.trigger("FAILURE");
 			} else if (unit.num === 0) { // 空白，递归打开周围8格
 				this.data.setOpen(unit.m, unit.n);
-				this._isSuccess();
-				this.render.paintUnit(unit.m + 1, unit.n + 1, "num0");
+				this.render.paint(unit);
+				// this.render.paintUnit(unit.m + 1, unit.n + 1, "num0");
 				var neighbors = this._getNeighbors(unit);
 				this._openNeighbors(neighbors);
-			} else { // 数字，显示
-				this.data.setOpen(unit.m, unit.n);				
 				this._isSuccess();
-				this.render.paintUnit(unit.m + 1, unit.n + 1, "num" + unit.num);
+			} else { // 数字，显示
+				this.data.setOpen(unit.m, unit.n);
+				this.render.paint(unit);
+				// this.render.paintUnit(unit.m + 1, unit.n + 1, "num" + unit.num);
+				this._isSuccess();
 			}
 		},
 
@@ -157,9 +161,9 @@ define(function() {
 
 		// 游戏胜利：所有非雷格子均已打开
 		_isSuccess: function() {
-			this.openedUnits++; 
+			this.openedUnits++;
 			if (this.openedUnits === this.noMineUnits) {
-				Event.trigger("SUCCESS");
+				this.event.trigger("SUCCESS");
 				return true;
 			}
 			return false;

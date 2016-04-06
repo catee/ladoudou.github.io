@@ -4,67 +4,75 @@ requirejs.config({
 
 // Start the main app logic.
 requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/Control', 'controller/Event'], function(Render, DyadicArray, Data, Control, Event) {
-    window.R = new Render({
+
+    var data = new Data();
+    var render = new Render({
         canvas: document.querySelector('#canvas')
     });
-    // window.D = new DyadicArray([1,0,0,1,1,1,0,0,1,0,0,1], 3, 4);
-    window.C = new DyadicArray(new Float32Array([1, 1, 1, 1, 0, 1, 1, 1, 1]), 3, 3);
+    var event = new Event();
+    var control = new Control(data, render, event);    
 
-    var a = new Array();
-    for (var i = 0; i < 12000; i++) {
-        a.push(Math.random() > 0.5 ? 1 : 0);
-    }
-    var s = +new Date();
-    var a_d = new DyadicArray(a, 120, 100);
-    var result = a_d.convolution(C);
-    console.log(+new Date() - s);
-    console.log(result);
+    var t = 0;
+    var timer = null;
 
-    var s = +new Date();
-    window.D = new Data();
-    console.log(+new Date() - s);
-
-    // $('#canvas').on('click', function (e) {
-    //     R.paintUnit(R.coordinateTransition.c2m(e.offsetX, e.offsetY), 'num0');
-    //     console.log(R.coordinateTransition.c2m(e.offsetX, e.offsetY));
-    // })
-
-    var control = new Control(window.D, window.R);
-
-    window.Event = new Event();
-
-    $("#restart").bind("click", function() {
-        window.Event.trigger("START");
-    });
-
-    window.Event.listen("START", function(level) {
-        var l = level ? level : 0;
-        D.level = l;
-        R.level = l;
-        $("#leftMine").html(D.countMines);
+    event.listen("INIT", function(level) {
+        var l = level ? level : +$("#gameLevel")[0].value || 0;
+        data.level = l;
+        render.level = l;
         control.bind();
+        $("#leftMine").html(data.countMines);
+        $("#leftTime").html(0);
+        clearInterval(timer);
+        t = 0;
     });
-    window.Event.listen("SUCCESS", function() {
+    event.listen("START", function() {
+        if (t) {
+            t = 0;
+        }
+        if (timer) {
+            clearInterval(timer);
+        }
+        timer = setInterval(function() {
+            $("#leftTime").html(t++);
+        }, 1000);
+    });
+    event.listen("SUCCESS", function() {
+        clearInterval(timer);
+        t = 0;
+        $("#leftMine").html(0);
         var start = confirm("Congratulations! You win! Once more?");
         if (start) {
-            window.Event.trigger("START");
+            event.trigger("INIT");
         } else {
             control.unbind();
         }
     });
-    window.Event.listen("FAILURE", function() {
+    event.listen("FAILURE", function() {
+        clearInterval(timer);
+        t = 0;
         var start = confirm("Sorry, you lose. Try again?");
         if (start) {
-            window.Event.trigger("START");
+            event.trigger("INIT");
         } else {
             control.unbind();
         }
     });
-    window.Event.listen("FLAG", function(num) {
+    event.listen("FLAG", function(num) {
         $("#leftMine").html(num);
         console.log("the rest of mines: " + num);
     });
 
-    window.Event.trigger("START", 0);
+    event.trigger("INIT", 0);
+
+    // 重玩
+    $("#restart").bind("click", function() {
+        event.trigger("INIT");
+    });
+
+    // 设置游戏规则
+    $("#gameLevel").bind("change", function() {
+        event.trigger("INIT", +this.value);
+    });
+
 
 });
