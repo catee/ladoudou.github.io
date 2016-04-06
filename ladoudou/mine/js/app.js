@@ -4,7 +4,6 @@ requirejs.config({
 
 // Start the main app logic.
 requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/Control', 'controller/Event'], function(Render, DyadicArray, Data, Control, Event) {
-    console.log(a);
     window.R = new Render({
         canvas: document.querySelector('#canvas')
     });

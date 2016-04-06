@@ -156,6 +156,7 @@ define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animati
         },
 
         paint: function (array) {
+            array = getType(array) === 'array' ? array : [array];
             array.forEach(function (obj) {
                 if (obj.flag) {
                     this.paintUnit(obj.m + 1, obj.n + 1, 'flag');
