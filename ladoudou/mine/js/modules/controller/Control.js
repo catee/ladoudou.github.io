@@ -19,8 +19,6 @@ define(['controller/Rules'], function(Rules) {
 			document.oncontextmenu = function(e) {
 				e.preventDefault();
 			};
-			// // 初始化游戏
-			// this.event.trigger("INIT",1);
 		},
 
 		bind: function() {

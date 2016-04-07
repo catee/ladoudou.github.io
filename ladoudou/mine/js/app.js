@@ -10,30 +10,31 @@ requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/Control
         canvas: document.querySelector('#canvas')
     });
     var event = new Event();
-    var control = new Control(data, render, event);    
+    var control = new Control(data, render, event);
 
     var t = 0;
     var timer = null;
 
+    event.listen("FLAG", function(num) {
+        $("#leftMine").html(num);
+    });
     event.listen("INIT", function(level) {
         var l = level ? level : +$("#gameLevel")[0].value || 0;
         data.level = l;
         render.level = l;
         control.bind();
         $("#leftMine").html(data.countMines);
-        $("#leftTime").html(0);
+        $("#timing").html(0);
         clearInterval(timer);
         t = 0;
     });
     event.listen("START", function() {
-        if (t) {
-            t = 0;
-        }
-        if (timer) {
-            clearInterval(timer);
-        }
         timer = setInterval(function() {
-            $("#leftTime").html(t++);
+            if (t < 999) {
+                $("#timing").html(++t);
+            } else {
+                clearInterval(timer);
+            }
         }, 1000);
     });
     event.listen("SUCCESS", function() {
@@ -57,19 +58,13 @@ requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/Control
             control.unbind();
         }
     });
-    event.listen("FLAG", function(num) {
-        $("#leftMine").html(num);
-        console.log("the rest of mines: " + num);
-    });
 
-    event.trigger("INIT", 0);
-
-    // 重玩
+    // 閲嶇帺
     $("#restart").bind("click", function() {
         event.trigger("INIT");
     });
 
-    // 设置游戏规则
+    // 璁剧疆娓告垙绾у埆
     $("#gameLevel").bind("change", function() {
         event.trigger("INIT", +this.value);
     });

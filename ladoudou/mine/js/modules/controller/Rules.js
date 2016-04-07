@@ -15,6 +15,7 @@ define(function() {
 			this.noMineUnits = this.data.data.source.length - this.data.countMines;
 			this.openedUnits = 0;
 			this.mineLeft = this.data.countMines;
+			this.event.trigger("FLAG", this.data.countMines);
 		},
 
 		/**
