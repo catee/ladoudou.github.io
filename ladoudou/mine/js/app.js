@@ -5,6 +5,7 @@ requirejs.config({
 // Start the main app logic.
 requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/Control', 'controller/Event'], function(Render, DyadicArray, Data, Control, Event) {
 
+    // 初始化模块
     var data = new Data();
     var render = new Render({
         canvas: document.querySelector('#canvas')
@@ -15,9 +16,7 @@ requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/Control
     var t = 0;
     var timer = null;
 
-    event.listen("FLAG", function(num) {
-        $("#leftMine").html(num);
-    });
+    // 监听游戏控制事件
     event.listen("INIT", function(level) {
         var l = level ? level : +$("#gameLevel")[0].value || 0;
         data.level = l;
@@ -47,6 +46,9 @@ requirejs(['render/Render', 'data/DyadicArray', 'data/Data', 'controller/Control
         } else {
             control.unbind();
         }
+    });
+    event.listen("FLAG", function(num) {
+        $("#leftMine").html(num);
     });
     event.listen("FAILURE", function() {
         clearInterval(timer);

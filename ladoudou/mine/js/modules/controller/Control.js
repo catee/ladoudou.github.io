@@ -1,8 +1,7 @@
 define(['controller/Rules'], function(Rules) {
-	var _rules = null;
 
 	var Control = function(data, render, event) {
-		_rules = new Rules(data, render, event);
+		this._rules = new Rules(data, render, event);
 		this.event = event;
 		this.ele = render.canvas;
 		this.timeout_click = null;
@@ -28,7 +27,7 @@ define(['controller/Rules'], function(Rules) {
 			this.ele.addEventListener("dblclick", this, false);
 			this.ele.addEventListener("mousedown", this, false);
 			// 初始化规则所需数据
-			_rules.init();
+			this._rules.init();
 			this.firstClick = true;
 		},
 
@@ -44,30 +43,31 @@ define(['controller/Rules'], function(Rules) {
 			this.firstClick = false;
 			clearTimeout(this.timeout_click);
 			// console.log("double click.");
-			_rules.quickOpen(e.offsetX, e.offsetY);
+			this._rules.quickOpen(e.offsetX, e.offsetY);
 		},
 
 		/**
 		 * 鼠标点击响应事件
 		 */
 		onMouseDown: function(e) {
+			var that = this;
 			this.firstClick && this.event.trigger("START");
 			this.firstClick = false;
 			if (e.buttons == 1) { // 单击
 				clearTimeout(this.timeout_click);
 				this.timeout_click = setTimeout(function() {
 					// console.log("left click.");
-					_rules.open(e.offsetX, e.offsetY);
+					that._rules.open(e.offsetX, e.offsetY);
 				}, 300);
 			}
 			if (e.buttons == 2) { // 右键单击
 				// console.log("right click.");
-				_rules.mark(e.offsetX, e.offsetY);
+				this._rules.mark(e.offsetX, e.offsetY);
 			}
 			if (e.buttons == 3) { // 左右键一起点击
 				clearTimeout(this.timeout_click);
 				// console.log("left & right click.");
-				_rules.quickOpen(e.offsetX, e.offsetY);
+				this._rules.quickOpen(e.offsetX, e.offsetY);
 			}
 		},
 

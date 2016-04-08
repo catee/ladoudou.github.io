@@ -1,22 +1,21 @@
 define(function() {
-	var clientList = {};
-	var offlineStack = null;
 
 	var Event = function() {
-		offlineStack = [];
+		this.clientList = {};
+		this.offlineStack = {}; // 存放先trigger后listen的离线事件函数
 	};
 
 	Event.prototype = {
 		constructor: Event,
 		_listen: function(key, fn) {
-			if (!clientList[key]) {
-				clientList[key] = [];
+			if (!this.clientList[key]) {
+				this.clientList[key] = [];
 			}
-			clientList[key].push(fn);
+			this.clientList[key].push(fn);
 		},
 		_trigger: function() {
 			var key = Array.prototype.shift.call(arguments);
-			var fns = clientList[key];
+			var fns = this.clientList[key];
 			if (!fns || fns.length === 0) {
 				return false;
 			}
@@ -24,14 +23,15 @@ define(function() {
 				fns[i].apply(this, arguments);
 			}
 		},
-		listen: function() {
+		listen: function(key, fn) {
 			this._listen.apply(this, arguments);
-			if (offlineStack) {
-				offlineStack.forEach(function(fn, index) {
+			// 某事件第一次被listen时，触发对应离线消息
+			if (this.offlineStack[key] && this.offlineStack[key].length) {
+				this.offlineStack[key].forEach(function(fn, index) {
 					fn();
 				});
+				this.offlineStack[key] = null;
 			}
-			offlineStack = null;
 		},
 		trigger: function() {
 			var that = this;
@@ -39,13 +39,18 @@ define(function() {
 			var fn = function() {
 				that._trigger.apply(that, args);
 			};
-			if (offlineStack) {
-				return offlineStack.push(fn);
+			// 该事件没有被listen过，则进入离线栈
+			var key = args[0];
+			if (!this.clientList[key]) {
+				if (!this.offlineStack[key]) {
+					this.offlineStack[key] = [];
+				}
+				return this.offlineStack[key].push(fn);
 			}
 			return fn();
 		},
 		remove: function(key, fn) {
-			var fns = clientList[key];
+			var fns = this.clientList[key];
 			if (!fns) {
 				return false;
 			}
