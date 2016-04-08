@@ -1,37 +1,72 @@
-html, body{
-    width: 100%; height: 100%;
+html,
+body {
+    width: 100%;
+    height: 100%;
 }
-header{
-    height: 3px; width: 100%;
+
+header {
+    height: 3px;
+    width: 100%;
     background-color: hotpink;
 }
-.background{
+
+.background {
     opacity: .2;
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     position: absolute;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     z-index: -1;
     background: url(../../../img/bg.jpg) top center no-repeat;
     background-attachment: fixed;
 }
 
-.menu{
+.menu {
     width: 800px;
     margin: 30px auto 0;
 }
 
-.menu .items{
+.menu .items {
     width: 24%;
     display: inline-block;
 }
 
-.mine-area{
+.mine-area {
     margin: 30px auto 0;
-    width: 800px; height: 494px;
+    width: 800px;
+    height: 494px;
     background-color: #fff;
     box-shadow: 0 0 30px #fff;
 }
-#canvas{
-    width: 100%; height: 100%;
+
+#canvas {
+    width: 100%;
+    height: 100%;
     background-color: teal;
+}
+
+button {
+    border-radius: 4px;
+    background-color: #A5DE37;
+    border-color: #A5DE37;
+    color: #FFF;
+    font-weight: 300;
+    font-size: 14px;
+    text-align: center;
+    padding: 5px 20px;
+    text-decoration: none;
+    outline: none;
+}
+
+button:hover {
+    background-color: #BAE562;
+    text-decoration: none;
+    outline: none;
+}
+
+select {
+    font: inherit;
+    color: #666;
+    border-color: #6A9B9B;
 }
