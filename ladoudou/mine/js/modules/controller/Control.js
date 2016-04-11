@@ -16,9 +16,9 @@ define(['controller/Rules'], function(Rules) {
 
 		init: function() {
 			// 去掉默认的contextmenu事件，否则会和右键事件同时出现
-			document.oncontextmenu = function(e) {
+			this.ele.addEventListener("contextmenu", function(e) {
 				e.preventDefault();
-			};
+			});
 		},
 
 		bind: function() {
