@@ -1,9 +1,9 @@
 define(function () {
 
-    function Lucky (burgeon, seeds) {
+    function Lucky (red, balls) {
 
-        this.burgeon = burgeon;
-        this.seeds = seeds;
+        this.red = red;
+        this.balls = balls;
 
     }
 
@@ -12,10 +12,10 @@ define(function () {
         constructor: Lucky,
 
         get lucky () {
-            if (this.seeds === 0) {
+            if (this.balls === 0) {
                 return '没有更多的种子了';
             }
-            return Math.random() < this.burgeon / this.seeds ? (this.burgeon --, this.seeds --, 1) : (this.seeds --, 0);
+            return Math.random() < this.red / this.balls ? (this.red --, this.balls --, 1) : (this.balls --, 0);
         }
 
     }

@@ -14,6 +14,17 @@ define(['controller/Rules'], function(Rules) {
 
 		constructor: Control,
 
+		$level: 0,
+
+		set level (newValue) {
+			this.$level = newValue;
+			this._rules.level = newValue;
+		},
+
+		get level () {
+			return this.$level;
+		},
+
 		init: function() {
 			// 去掉默认的contextmenu事件，否则会和右键事件同时出现
 			this.ele.addEventListener("contextmenu", function(e) {

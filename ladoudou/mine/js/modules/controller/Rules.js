@@ -11,6 +11,11 @@ define(function() {
 
 		constructor: Rules,
 
+		set level (newValue) {
+			this.data.level = newValue;
+			this.render.level = newValue;
+		},
+
 		init: function(){
 			this.noMineUnits = this.data.data.source.length - this.data.countMines;
 			this.openedUnits = 0;
@@ -28,7 +33,7 @@ define(function() {
 				var f = unit.flag ? 0 : 1;
 				this.data.setFlag(unit.m, unit.n, f);
 				// this.render.paint(unit);
-				this.render.paintUnit(unit.m + 1, unit.n + 1, f ? "flag" : "map");
+				this.render.paintUnit(unit.m, unit.n, f ? "flag" : "map");
 				this.event.trigger("FLAG", f ? --this.mineLeft : ++this.mineLeft);
 			}
 		},
@@ -57,14 +62,16 @@ define(function() {
 
 		// 打开当前单元格
 		_openUnit: function(unit) {
+			var _flag = true;
 			if (unit.open || unit.flag) { // 已打开或旗帜，不操作
-				return;
+				;
 			} else if (unit.mine) { // 是雷，游戏结束
 				this.data.setOpen(unit.m, unit.n);
 				// 渲染结束效果，对render返回所有雷的对象数组
 				var arr_allmines = this._getAllMines();
 				this.render.paint(arr_allmines);
 				this.event.trigger("FAILURE");
+				_flag = false;
 			} else if (unit.num === 0) { // 空白，递归打开周围8格
 				this.data.setOpen(unit.m, unit.n);
 				this.render.paint(unit);
@@ -72,19 +79,22 @@ define(function() {
 				var neighbors = this._getNeighbors(unit);
 				this._openNeighbors(neighbors);
 				this._isSuccess();
+				_flag = true;
 			} else { // 数字，显示
 				this.data.setOpen(unit.m, unit.n);
 				this.render.paint(unit);
 				// this.render.paintUnit(unit.m + 1, unit.n + 1, "num" + unit.num);
 				this._isSuccess();
+				_flag = true;
 			}
+			return _flag;
 		},
 
 		// 获取单元格数据
 		_getUnit: function(offsetX, offsetY) {
 			var coord = this.render.coordinateTransition.c2m(offsetX, offsetY);
 			if (coord[0] > 0) {
-				return this.data.data.getValue(coord[0] - 1, coord[1] - 1);
+				return this.data.data.getValue(coord[0], coord[1]);
 			} else {
 				return;
 			}
@@ -101,49 +111,54 @@ define(function() {
 
 		// 打开周围8格
 		_openNeighbors: function(neighbors) {
-			neighbors.forEach(function(unit, index) {
-				this._openUnit(unit);
-			}, this);
+			for (var i = neighbors.length - 1; i >= 0; i--) {
+				if (! this._openUnit(neighbors[i])) {
+					break;
+				};
+			}
+			// neighbors.forEach(function(unit, index) {
+			// 	this._openUnit(unit);
+			// }, this);
 		},
 
 		// 获取周围8格的对象数组
 		_getNeighbors: function(unit) {
 			var neighbors = [];
 			var map = this.data.data;
-			var x = unit.m;
-			var y = unit.n;
+			var m = unit.m;
+			var n = unit.n;
 			var tempUnit = null;
 			try {
-				tempUnit = map.getValue(x - 1, y - 1);
+				tempUnit = map.getValue(m - 1, n - 1);
 				tempUnit && neighbors.push(tempUnit);
 			} catch (e) {}
 			try {
-				tempUnit = map.getValue(x - 1, y);
+				tempUnit = map.getValue(m - 1, n);
 				tempUnit && neighbors.push(tempUnit);
 			} catch (e) {}
 			try {
-				tempUnit = map.getValue(x - 1, y + 1);
+				tempUnit = map.getValue(m - 1, n + 1);
 				tempUnit && neighbors.push(tempUnit);
 			} catch (e) {}
 			try {
-				tempUnit = map.getValue(x, y - 1);
+				tempUnit = map.getValue(m, n - 1);
 				tempUnit && neighbors.push(tempUnit);
 			} catch (e) {}
-			// map.getValue(x, y) && neighbors.push(map.getValue(x, y));
+			// map.getValue(m, n) && neighbors.push(map.getValue(m, n));
 			try {
-				tempUnit = map.getValue(x, y + 1);
-				tempUnit && neighbors.push(tempUnit);
-			} catch (e) {}
-			try {
-				tempUnit = map.getValue(x + 1, y - 1);
+				tempUnit = map.getValue(m, n + 1);
 				tempUnit && neighbors.push(tempUnit);
 			} catch (e) {}
 			try {
-				tempUnit = map.getValue(x + 1, y);
+				tempUnit = map.getValue(m + 1, n - 1);
 				tempUnit && neighbors.push(tempUnit);
 			} catch (e) {}
 			try {
-				tempUnit = map.getValue(x + 1, y + 1);
+				tempUnit = map.getValue(m + 1, n);
+				tempUnit && neighbors.push(tempUnit);
+			} catch (e) {}
+			try {
+				tempUnit = map.getValue(m + 1, n + 1);
 				tempUnit && neighbors.push(tempUnit);
 			} catch (e) {}
 

@@ -1,7 +1,6 @@
-define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], function (typeChecker, DyadicArray, config, Lucky) {
+define(['utils/typeChecker', 'utils/Matrix', 'utils/Lucky', 'data/config'], function (typeChecker, Matrix, Lucky, config) {
 
     var level = config.level;
-    var getType = typeChecker.getType;
     var defineProperties = Object.defineProperties;
 
     function createUnit (m, n, mine, num) {
@@ -55,7 +54,7 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
 
         set level (newValue) {
             var arr;
-            switch (getType(newValue)) {
+            switch (typeChecker.getType(newValue)) {
                 case 'number':
                     if (newValue < 0) {
                         arr = level[0]
@@ -83,11 +82,11 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
             var row = this.row;
             var colum = this.colum;
             var countMines = this.countMines;
-            var mineMap = new DyadicArray(new Array(row * colum), row, colum);
+            var mineMap = new Matrix(new Array(row * colum), row, colum);
             var lucky = new Lucky(countMines, row * colum);
 
-            for (var i = 0; i < row; i ++) {
-                for (var j = 0; j < colum; j ++) {
+            for (var i = 1; i <= row; i ++) {
+                for (var j = 1; j <= colum; j ++) {
                     mineMap.setValue(i, j, lucky.lucky);
                 }
             }
@@ -97,7 +96,7 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
 
         setCountMap: function () {
             var mineMap = this.mineMap;
-            var core = new DyadicArray(new Float32Array([1, 1, 1, 1, 0, 1, 1, 1, 1]), 3, 3);
+            var core = new Matrix(new Float32Array([1, 1, 1, 1, 0, 1, 1, 1, 1]), 3, 3);
             var countMap = mineMap.convolution(core);
 
             this.countMap = countMap;
@@ -108,10 +107,10 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
             var colum = this.colum;
             var mineMap = this.mineMap;
             var countMap = this.countMap;
-            var data = new DyadicArray(new Array(row * colum), row, colum);
+            var data = new Matrix(new Array(row * colum), row, colum);
 
-            for (var i = 0; i < row; i ++) {
-                for (var j = 0; j < colum; j ++) {
+            for (var i = 1; i <= row; i ++) {
+                for (var j = 1; j <= colum; j ++) {
                     data.setValue(i, j, createUnit(i, j, mineMap.getValue(i, j), countMap.getValue(i, j)));
                 }
             }
@@ -120,7 +119,7 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
         },
 
         getAroundMines: function (m, n) {
-            if (getType(m) === 'array') {
+            if (typeChecker.isArray(m)) {
                 n = m[1];
                 m = m[0];
             }
@@ -148,23 +147,23 @@ define(['utils/typeChecker', 'data/DyadicArray', 'data/config', 'utils/Lucky'], 
         },
 
         setOpen: function (m, n, status) {
-            if (getType(m) === 'array') {
+            if (typeChecker.isArray(m)) {
                 status = n;
                 n = m[1];
                 m = m[0];
             }
-            status = getType(status) === 'undefined' ? 1 : + !! status;
+            status = typeChecker.getType(status) === 'undefined' ? 1 : + !! status;
             // console.log(status);
             this.data.getValue(m, n).open = status;
         },
 
         setFlag: function (m, n, status) {
-            if (getType(m) === 'array') {
+            if (typeChecker.isArray(m)) {
                 status = n;
                 n = m[1];
                 m = m[0];
             }
-            status = getType(status) === 'undefined' ? 1 : + !! status;
+            status = typeChecker.getType(status) === 'undefined' ? 1 : + !! status;
             // console.log(status);
             this.data.getValue(m, n).flag = status;
         }

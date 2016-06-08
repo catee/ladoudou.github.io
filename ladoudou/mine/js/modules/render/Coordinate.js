@@ -14,50 +14,6 @@ define(function () {
         constructor: Coordinate,
 
         d2c: function (x, y) {
-            // var argus;
-            // switch (arguments.length) {
-            //     case 0:
-            //         argus = [];
-            //     case 1:
-            //     case 2:
-            //         argus = arguments;
-            //         break;
-            //     default:
-            //         argus = arguments.slice(0, 2);
-            // }
-            // var x, y;
-            // switch (argus.length) {
-            //     case 1:
-            //         if (typeof arguments[0] === 'array') {
-            //             x = arguments[0][0];
-            //             y = arguments[0][1];
-            //         } else if (typeof arguments[0] === 'number') {
-            //             x = arguments[0];
-            //             y = 0;
-            //         } else {
-            //             x = 0;
-            //             y = 0;
-            //         }
-            //         break;
-            //     case 2:
-            //         if (typeof arguments[0] === 'number') {
-            //             x = arguments[0];
-            //         } else {
-            //             x = 0;
-            //         }
-            //         if (typeof arguments[1] === 'number') {
-            //             y = arguments[1];
-            //         } else {
-            //             y = 0;
-            //         }
-            //         break;
-            //     case 0:
-            //         x = 0;
-            //         y = 0;
-            //         break;
-            //     default:
-            //         break;
-            // }
             return [this.delta_x + x, this.delta_y - y];
         },
 
@@ -80,8 +36,6 @@ define(function () {
             this.mapAreaWidth = m;
             this.mapAreaHeight = n;
         }
-
-
 
     }
 

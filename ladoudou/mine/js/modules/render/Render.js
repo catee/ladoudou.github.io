@@ -1,13 +1,12 @@
-define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animationFrame'], function (typeChecker, conf, Coor) {
+define(['utils/typeChecker', 'data/config', 'render/Coordinate'], function (typeChecker, conf, Coor) {
 
     var level = conf.level;
     var unitSize = conf.unitSize;
     var sourceImage = conf.sourceImage;
     var maps = conf.maps;
-    var getType = typeChecker.getType;
 
-    var requestAnimationFrame = window.requestAnimationFrame;
-    var cancelAnimationFrame = window.cancelAnimationFrame;
+    // var requestAnimationFrame = window.requestAnimationFrame;
+    // var cancelAnimationFrame = window.cancelAnimationFrame;
 
     var Render = function (opts) {
         var canvas = this.canvas = opts.canvas;
@@ -19,8 +18,8 @@ define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animati
         this.mineAreaWidth = 0;
         this.mineAreaHeight = 0;
         this.Mines = 0;
-        this.mineSize = unitSize; 
-        this.init();
+        this.mineSize = unitSize;
+        this.init(opts.level);
     };
 
     Render.prototype = {
@@ -29,19 +28,16 @@ define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animati
 
         _paintingLoop: null,
 
-        _deferred: new $.Deferred,
-
-        init: function () {
+        init: function (level) {
             var self = this;
-            $.when(this._deferred).done(function () {
-                self.level = 0;
+            this.prepareImages().done(function () {
+                self.level = level;
             });
-            this.prepareImages();
         },
 
         set level (newValue) {
             var arr;
-            switch (getType(newValue)) {
+            switch (typeChecker.getType(newValue)) {
                 case 'number':
                     if (newValue < 0) {
                         arr = level[0]
@@ -68,50 +64,46 @@ define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animati
         prepareImages: function () {
             var map = this.images.map = new Image();
             var self = this;
-            map.onload = function () {
-                self._deferred.resolve();
-            }
-            map.src = sourceImage;
-        },
-
-        startPaintingLoop: function () {
-            this.paintingLoop();
-        },
-
-        cancelPaintingLoop: function () {
-            cancelAnimationFrame(this._paintingLoop);
-        },
-
-        paintingLoop: function () {
-            var self = this;
-            this._paintingLoop = requestAnimationFrame(function () {
-                self.paintOnce();
-                self._paintingLoop = requestAnimationFrame(arguments.callee);
+            return new $.Deferred(function (deferred) {
+                map.onload = function () {
+                    deferred.resolve();
+                }
+                map.src = sourceImage;
             })
         },
 
-        paintCount: function (count) {
-            if (count < 1) {
-                return;
-            }
-            do {
-                this.paintOnce();
-            } while (-- count)
-        },
+        // startPaintingLoop: function () {
+        //     this.paintingLoop();
+        // },
 
-        paintOnce: function () {
-            this.painting();
-        },
+        // cancelPaintingLoop: function () {
+        //     cancelAnimationFrame(this._paintingLoop);
+        // },
 
-        painting: function () {
-            console.log(1);
+        // paintingLoop: function () {
+        //     var self = this;
+        //     this._paintingLoop = requestAnimationFrame(function () {
+        //         self.paintOnce();
+        //         self._paintingLoop = requestAnimationFrame(arguments.callee);
+        //     })
+        // },
 
-            // for (var i = 0; i < (w / size) * (h / size); i ++) {
-            //     var x = - (w / 2) + (i % wc) * size;
-            //     var y = (h / 2) - Math.floor(i / wc) * size;
-            //     this.paintMap(x, y, size, size);
-            // }
-        },
+        // paintCount: function (count) {
+        //     if (count < 1) {
+        //         return;
+        //     }
+        //     do {
+        //         this.paintOnce();
+        //     } while (-- count)
+        // },
+
+        // paintOnce: function () {
+        //     this.painting();
+        // },
+
+        // painting: function () {
+        //     console.log(1);
+        // },
 
         paintMap: function () {
             var x = this.mineAreaWidth,
@@ -120,16 +112,14 @@ define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animati
 
             var cx = x / s,
                 cy = y / s,
-                i = cx * cy - 1;
+                i = cx * cy;
 
             if (i <= 0) {
                 return;
             }
             do {
-                var ox = i % cx + 1;
-                var oy = Math.ceil(i / cx + .1e-7);
-                this.paintUnit(oy, ox, 'map');
-            } while (i --)
+                this.paintUnit(Math.ceil(i / cx), i % cx + 1, 'map');
+            } while (-- i)
 
             // var ptrn = ctx.createPattern(map, 'repeat');
             // ctx.fillStyle = ptrn;
@@ -137,7 +127,7 @@ define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animati
         },
 
         paintUnit: function (m, n, type) {
-            if (getType(m) === 'array') {
+            if (typeChecker.isArray(m)) {
                 type = n;
                 n = m[1];
                 m = m[0];
@@ -156,29 +146,27 @@ define(['utils/typeChecker', 'data/config', 'render/Coordinate', 'render/animati
         },
 
         paint: function (array) {
-            array = getType(array) === 'array' ? array : [array];
+            array = typeChecker.isArray(array) ? array : [array];
             array.forEach(function (obj) {
                 if (obj.flag) {
-                    this.paintUnit(obj.m + 1, obj.n + 1, 'flag');
+                    this.paintUnit(obj.m, obj.n, 'flag');
                 } else {
                     if (obj.open) {
                         if (obj.mine) {
-                            this.paintUnit(obj.m + 1, obj.n + 1, 'mineBoom');
+                            this.paintUnit(obj.m, obj.n, 'mineBoom');
                         } else {
-                            this.paintUnit(obj.m + 1, obj.n + 1, 'num' + obj.num);
+                            this.paintUnit(obj.m, obj.n, 'num' + obj.num);
                         }
                     } else {
                         if (obj.mine) {
-                            this.paintUnit(obj.m + 1, obj.n + 1, 'mine');
+                            this.paintUnit(obj.m, obj.n, 'mine');
                         } else {
-                            this.paintUnit(obj.m + 1, obj.n + 1, 'map');
+                            this.paintUnit(obj.m, obj.n, 'map');
                         }
                     }
                 }
             }, this);
         },
-
-
 
         clearCanvas: function () {
             this.canvas.width = this.canvasWidth;

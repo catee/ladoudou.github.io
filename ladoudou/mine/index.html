@@ -6,28 +6,57 @@
     <link rel="stylesheet" href="../../css/init.css">
     <link rel="stylesheet" href="css/mine.css">
 </head>
-<body onselectstart="return false">
+<body>
 
     <header></header>
 
-    <section class="background"></section>
-
     <section class="menu">
-        <div class="items">难度：
-            <select id="gameLevel">
-                <option value=0 >初级</option>
-                <option value=1 >中级</option>
-                <option value=2 >高级</option>
-                <option value=3 >变态</option>
-            </select>
+        <div class="menu-items" id="gameLevel">
+            <h2 class="menu-title">壮士，请选一个级别：</h2>
+            <p class="menu-paragraph">
+                <button class="menu-button" data-level="0">我战斗力不足5</button>
+            </p>
+            <p class="menu-paragraph">
+                <button class="menu-button" data-level="1">我是小学生</button>
+            </p>
+            <p class="menu-paragraph">
+                <button class="menu-button" data-level="2">我是扫雷高玩</button>
+            </p>
+            <p class="menu-paragraph">
+                <button class="menu-button" data-level="3">我是变态</button>
+            </p>
+            <!-- <p class="menu-paragraph">
+                <span class="menu-text">我是女王，你得听我的</span>
+                <input class="menu-input" type="text" value="" placeholder="行 列 雷数" />
+                <button class="menu-button">┏ (゜ω゜)=☞</button>
+            </p> -->
         </div>
-        <div class="items">雷数：<span id="leftMine"></span></div>
-        <div class="items">时间：<span id="timing">0</span></div>
-        <div class="items">重玩：<button id="restart">restart</button></div>
+        <div class="menu-items">
+            <h2 class="menu-title">剩余的兔子(雷)数：</h2>
+            <p class="menu-paragraph">
+                <span class="menu-text" id="leftMine">10</span>
+            </p>
+        </div>
+        <div class="menu-items">
+            <h2 class="menu-title">花掉的时间：</h2>
+            <p class="menu-paragraph">
+                <span class="menu-text" id="timer">0</span>
+            </p>
+        </div>
+        <div class="menu-items">
+            <h2 class="menu-title">戳我重玩：</h2>
+            <p class="menu-paragraph">
+                <button class="menu-button" id="restart">不,戳我才是重玩</button>
+            </p>
+        </div>
     </section>
 
     <section class="mine-area">
         <canvas id="canvas" height="618" width="1000"></canvas>
+    </section>
+
+    <section class="cover">
+        <p>保护眼睛，请使用大屏幕</p>
     </section>
 
     <script src="../../js/lib/jquery-2.1.4.min.js"></script>
